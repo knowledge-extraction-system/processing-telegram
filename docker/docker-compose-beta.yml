@@ -1,0 +1,55 @@
+version: '3.4'
+services:
+  ┬─┬ノ( º _ ºノ)-service:
+    image: "127.0.0.1:5000/${STACK_NAME}/${IMAGE_NAME}:${TAG}"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 50s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          memory: 728M
+        reservations:
+          memory: 728M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:6003/processing/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+    ports:
+      - "6003:6003"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+  elasticsearch:
+    hostname: "elasticsearch"
+    container_name: "elasticsearch"
+    environment:
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms2g\ -Xmx2g"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.12.1"
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - web
+
+networks:
+  web:
+    driver: overlay
+    # don't forget to set those to avoid conflicts
+    # otherwise it may choose 10.0.0.0 and you won't be able to reach host and its network
+    ipam:
+      config:
+        - subnet: 172.28.0.1/16

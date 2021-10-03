@@ -1,0 +1,9 @@
+[telegram-client:children]
+  docker
+
+  [docker]
+  docker-01 ansible_host=127.0.0.1
+
+  [telegram-client:vars]
+  ansible_become=no
+  ansible_connection=local

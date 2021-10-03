@@ -1,0 +1,11 @@
+---
+- name: Copying files
+  copy:
+    src: "{{ project_env }}/{{ item }}"
+    dest: "{{ working_dir }}/config/{{ item }}"
+    mode: preserve
+    owner: gitlab-runner
+    group: gitlab-runner
+
+  with_items:
+    - "application-{{ project_env }}.properties"

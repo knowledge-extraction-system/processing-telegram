@@ -1,0 +1,9 @@
+[telegram-client:children]
+  docker
+
+  [docker]
+  docker-01 ansible_host=10.80.11.5
+
+  [telegram-client:vars]
+  ansible_become=yes
+  project_env=alpha
